@@ -24,8 +24,20 @@ SALES_IMAGE     := $(BASE_IMAGE_NAME)/$(SALES_APP):$(VERSION)
 METRICS_IMAGE   := $(BASE_IMAGE_NAME)/metrics:$(VERSION)
 AUTH_IMAGE      := $(BASE_IMAGE_NAME)/$(AUTH_APP):$(VERSION)
 
-run:
 
+
+# ==============================================================================
+# Building containers
+
+build: sales
+
+sales:
+	docker build \
+		-f zarf/docker/dockerfile.sales \
+		-t $(SALES_IMAGE) \
+		--build-arg BUILD_REF=$(VERSION) \
+		--build-arg BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
+		.
 
 
 # ==============================================================================
@@ -56,10 +68,8 @@ dev-status-all:
 
 dev-status:
 	watch -n 2 kubectl get pods -o wide --all-namespaces
-	
 
 # ------------------------------------------------------------------------------
-
 
 # ==============================================================================
 # Modules support

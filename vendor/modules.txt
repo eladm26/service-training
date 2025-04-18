@@ -1,3 +1,6 @@
+# github.com/ardanlabs/conf/v3 v3.7.1
+## explicit; go 1.23.0
+github.com/ardanlabs/conf/v3
 # github.com/go-json-experiment/json v0.0.0-20250223041408-d3c622f1b874
 ## explicit; go 1.24
 github.com/go-json-experiment/json
@@ -6,3 +9,13 @@ github.com/go-json-experiment/json/internal/jsonflags
 github.com/go-json-experiment/json/internal/jsonopts
 github.com/go-json-experiment/json/internal/jsonwire
 github.com/go-json-experiment/json/jsontext
+# golang.org/x/text v0.23.0
+## explicit; go 1.23.0
+golang.org/x/text/collate
+golang.org/x/text/internal/colltab
+golang.org/x/text/internal/language
+golang.org/x/text/internal/language/compact
+golang.org/x/text/internal/tag
+golang.org/x/text/language
+golang.org/x/text/transform
+golang.org/x/text/unicode/norm

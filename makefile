@@ -104,7 +104,7 @@ metrics:
 	expvarmon -ports="localhost:3010" -vars="build,requests,goroutines,errors,panics,mem:memstats.HeapAlloc,mem:memstats.HeapSys,mem:memstats.Sys"
 
 statsviz:
-	google-chrome http://localhost:3010/debug/statsviz
+	xdg-open http://localhost:3010/debug/statsviz
 
 # ==============================================================================
 # Modules support

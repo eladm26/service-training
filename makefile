@@ -1,8 +1,11 @@
 SHELL_PATH = /bin/ash
 SHELL = $(if $(wildcard $(SHELL_PATH)),/bin/ash,/bin/bash)
 
-curl-test:
-	curl -il -X GET http://localhost:3000/test
+curl-live:
+	curl -il -X GET http://localhost:3000/liveness
+
+curl-ready:
+	curl -il -X GET http://localhost:3000/readiness
 
 # ==============================================================================
 # Define dependencies

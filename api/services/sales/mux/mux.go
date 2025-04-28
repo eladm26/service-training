@@ -3,7 +3,6 @@
 package mux
 
 import (
-	"net/http"
 	"os"
 
 	"github.com/ardanlabs/service/api/services/sales/route/sys/checkapi"

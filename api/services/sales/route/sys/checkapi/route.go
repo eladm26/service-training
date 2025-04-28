@@ -1,8 +1,6 @@
 package checkapi
 
 import (
-	"net/http"
-
 	"github.com/ardanlabs/service/foundation/web"
 )
 
@@ -11,4 +9,3 @@ import (
 	app.HandleFunc("GET /readiness", readiness)
 
  }
- 

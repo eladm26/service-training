@@ -3,7 +3,6 @@ package checkapi
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 
 	"github.com/ardanlabs/service/foundation/web"

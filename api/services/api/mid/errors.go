@@ -49,9 +49,9 @@ func Errors(log *logger.Logger) web.MidHandler {
 
 				// If we receive the shutdown err we need to return it
 				// back to the base handler to shut down the service
-                if web.IsShutdown(err) {
-                    return err
-                }
+				if web.IsShutdown(err) {
+					return err
+				}
 			}
 			return nil
 

@@ -56,3 +56,23 @@ func (a *App) HandleFunc(pattern string, handler Handler, mw ...MidHandler) {
 
 	a.ServeMux.HandleFunc(pattern, h)
 }
+
+// Handle sets a handler function for a given HTTP method and path pair
+// to the application server mux with no middlware
+func (a *App) HandleFuncNoMiddleware(pattern string, handler Handler, mw ...MidHandler) {
+	h := func(w http.ResponseWriter, r *http.Request) {
+		v := Values{
+			TraceId: uuid.NewString(),
+			Now:     time.Now().UTC(),
+		}
+
+		ctx := setValues(r.Context(), &v)
+
+		if err := handler(ctx, w, r); err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
+
+	a.ServeMux.HandleFunc(pattern, h)
+}

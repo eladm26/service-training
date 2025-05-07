@@ -1,16 +1,21 @@
 package main
 
 import (
+	"bytes"
+	"context"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
+	_ "embed"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/open-policy-agent/opa/v1/rego"
 )
 
 func main() {
@@ -20,6 +25,9 @@ func main() {
 	}
 
 }
+
+//go:embed rego/authentication.rego
+var opaAuthentication string
 
 // GenerateToken generates a signed JWT token string representing the user Claims.
 func GenToken() (string, error) {
@@ -40,7 +48,7 @@ func GenToken() (string, error) {
 	}{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   "123456789",
-			Issuer:    "sercice project",
+			Issuer:    "service project",
 			ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(8760 * time.Hour)),
 		},
 		Roles: []string{"ADMIN"},
@@ -76,7 +84,7 @@ func GenToken() (string, error) {
 
 	// Construct the PEM block for the puvblic key
 	publicBlock := pem.Block{
-		Type:  "PUBLIC_KEY",
+		Type:  "PUBLIC KEY",
 		Bytes: asn1Bytes,
 	}
 
@@ -84,6 +92,46 @@ func GenToken() (string, error) {
 	if err := pem.Encode(os.Stdout, &publicBlock); err != nil {
 		return "", fmt.Errorf("encoding to public file: %w", err)
 	}
+
+	var b bytes.Buffer
+	if err := pem.Encode(&b, &publicBlock); err != nil {
+		return "", fmt.Errorf("encoding to public file: %w", err)
+	}
+
+	// -------------------------------------------------------------------------
+
+	ctx := context.Background()
+	query := fmt.Sprintf("x = data.%s.%s", "ardan.rego", "auth")
+
+	q, err := rego.New(
+		rego.Query(query),
+		rego.Module("policy.rego", opaAuthentication),
+	).PrepareForEval(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	input := map[string]any{
+		"Key":   b.String(),
+		"Token": str,
+		"ISS":   "service project",
+	}
+
+	results, err := q.Eval(ctx, rego.EvalInput(input))
+	if err != nil {
+		return "", fmt.Errorf("query: %w", err)
+	}
+
+	if len(results) == 0 {
+		return "", errors.New("No results")
+	}
+
+	result, ok := results[0].Bindings["x"].(bool)
+	if !ok || !result {
+		return "", fmt.Errorf("bindings results[%v] ok[%v]", result, ok)
+	}
+
+	fmt.Println("TOKEN VALIDATED")
 
 	return str, nil
 

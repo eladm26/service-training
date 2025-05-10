@@ -47,11 +47,11 @@ func GenToken() (string, error) {
 		Roles []string
 	}{
 		RegisteredClaims: jwt.RegisteredClaims{
-			Subject:   "123456789",
+			Subject:   "026f30a8-f048-4822-87e3-39bcf0e2353f",
 			Issuer:    "service project",
 			ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(8760 * time.Hour)),
 		},
-		Roles: []string{"ADMIN"},
+		Roles: []string{"USER"},
 	}
 
 	method := jwt.GetSigningMethod(jwt.SigningMethodRS256.Name)

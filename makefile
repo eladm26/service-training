@@ -2,7 +2,7 @@
 # 	To generate a private/public key PEM file.
 # 	$ openssl genpkey -algorithm RSA -out private.pem -pkeyopt rsa_keygen_bits:2048
 # 	$ openssl rsa -pubout -in private.pem -out public.pem
-# 	$ ./admin genkey
+# 	$ ./ genkey
 
 SHELL_PATH = /bin/ash
 SHELL = $(if $(wildcard $(SHELL_PATH)),/bin/ash,/bin/bash)
@@ -21,6 +21,20 @@ curl-panic:
 
 admin:
 	go run api/tooling/admin/main.go
+
+token:
+	curl -il \
+	--user "admin@example.com:gophers" http://localhost:6000/v1/auth/token/54bb2165-71e1-41a6-af3e-7da4a0e1e2c1
+
+# admin token
+# export TOKEN=eyJhbGciOiJSUzI1NiIsImtpZCI6IjU0YmIyMTY1LTcxZTEtNDFhNi1hZjNlLTdkYTRhMGUxZTJjMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzZXJ2aWNlIHByb2plY3QiLCJzdWIiOiIwMjZmMzBhOC1mMDQ4LTQ4MjItODdlMy0zOWJjZjBlMjM1M2YiLCJleHAiOjE3NzgzNDA2NjcsIlJvbGVzIjpbIkFETUlOIl19.JH7SVjDcZBMMUoaqRhRO0UEkpHOEUS94px0hoYzxog5PbnnvTQ0nPQF-JYGczbj1pI8ieiMkeMxdg5367UjZ85ngzZCS84M1W8B1u6Gf56_N4IuAynhRxg_1IQRmAzAkeY1VtCCu3HICRXc2uSY4SGUQsH05ddZb3WhjWXXNi3YeS5c3UfTV3aYAs2dXzcyGUaE-FWC27c7ud8Kicp-u303Dm_rtJa-nQ7q3OQsxApqY-LFuXEqOhYCzRiMf1kaGLR_yaA6XCKe-VkFX-BoFGf7PxFdA7Wv-_UWCm8PXqrD8ZDxTySqvstJQLN5okBxCedGG9yEkP6K2Z-cIsZIwjg
+
+#user token
+# export TOKEN=eyJhbGciOiJSUzI1NiIsImtpZCI6IjU0YmIyMTY1LTcxZTEtNDFhNi1hZjNlLTdkYTRhMGUxZTJjMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzZXJ2aWNlIHByb2plY3QiLCJzdWIiOiIwMjZmMzBhOC1mMDQ4LTQ4MjItODdlMy0zOWJjZjBlMjM1M2YiLCJleHAiOjE3Nzg0NDEzMjMsIlJvbGVzIjpbIlVTRVIiXX0.f4eayma8UA1iPiJqsVF1CziM7EhclyrOjIMjfqaHE7KR81FM_X_BOuQdfuWYwX_ZkzqzskyLqv4sV1krtjgH4Gsk15SEIOiQQYloBre7eK4BesVBLAG0-XsKU58xVl4Dluk42I_FfngtUAAEDntKAs9q7bbFV9sWD9adybOySMrFSY5A287b5Tyyo_SgSEUQkIVpv5eKQN3-xn4m0AhySUfhueq9KJdI1BPsQQ8nyPyakOdl0pcjxt3OIjpETPjIl6NOM2bYyj8eV8BLsqoH9og7ox-857gBCPMOOoGUAvOX6nszSvVyUam1APApy4wAyaGf-8kQopLBIKwUUL0o-Q
+
+curl-auth:
+	curl -il \
+	-H "Authorization: Bearer ${TOKEN}" "http://localhost:3000/testauth"
 
 # ==============================================================================
 # Define dependencies

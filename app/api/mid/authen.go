@@ -2,6 +2,7 @@ package mid
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"strings"
 	"time"
@@ -24,6 +25,9 @@ func Authorization(ctx context.Context, auth *auth.Auth, authorization string, h
 		if err != nil {
 			return err
 		}
+
+	case "Basic":
+		ctx, err = ProcessBasic(ctx, authorization)
 	}
 
 	return handler(ctx)
@@ -51,10 +55,10 @@ func ProcessJWT(ctx context.Context, auth *auth.Auth, token string) (context.Con
 }
 
 // Basic processes basic authentication logic.
-func ProcessBasic(ctx context.Context, handler Handler) error {
+func ProcessBasic(ctx context.Context, basic string) (context.Context, error) {
 	claims := auth.Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			Subject:   "38dc9d84-018b-4a15-b958-0b78af11c301",
+			Subject:   "026f30a8-f048-4822-87e3-39bcf0e2353f",
 			Issuer:    "service project",
 			ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(8760 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
@@ -64,11 +68,31 @@ func ProcessBasic(ctx context.Context, handler Handler) error {
 
 	subjectID, err := uuid.Parse(claims.Subject)
 	if err != nil {
-		return errs.Newf(errs.Unauthenticated, "parsing subject: %s", err)
+		return ctx, errs.Newf(errs.Unauthenticated, "parsing subject: %s", err)
 	}
 
 	ctx = setUserID(ctx, subjectID)
 	ctx = setClaims(ctx, claims)
 
-	return handler(ctx)
+	return ctx, nil
+
+}
+
+func parseBasicAuth(auth string) (string, string, bool) {
+	parts := strings.Split(auth, " ")
+	if len(parts) != 2 || parts[0] != "Basic" {
+		return "", "", false
+	}
+
+	c, err := base64.StdEncoding.DecodeString(parts[1])
+	if err != nil {
+		return "", "", false
+	}
+
+	username, password, ok := strings.Cut(string(c), ":")
+	if !ok {
+		return "", "", false
+	}
+
+	return username, password, true
 }

@@ -164,6 +164,18 @@ dev-describe-auth:
 	kubectl describe pod --namespace=$(NAMESPACE) -l app=$(AUTH_APP)
 
 # ==============================================================================
+# Administration
+
+migrate:
+	export SALES_DB_HOST_PORT=localhost; go run apis/tooling/admin/main.go migrate
+
+seed: migrate
+	export SALES_DB_HOST_PORT=localhost; go run apis/tooling/admin/main.go seed
+
+pgcli:
+	pgcli postgresql://postgres:postgres@localhost
+
+# ==============================================================================
 # Metrics and Tracing
 
 metrics:

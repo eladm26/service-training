@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -10,12 +11,13 @@ import (
 func Respond(ctx context.Context, w http.ResponseWriter, data any, statusCode int) error {
 	setStatusCode(ctx, statusCode)
 	if statusCode == http.StatusNoContent {
+		w.WriteHeader(statusCode)
 		return nil
 	}
 
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		return err
+		return fmt.Errorf("web.respond: marshal: %w", err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")

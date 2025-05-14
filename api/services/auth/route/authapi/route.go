@@ -14,10 +14,10 @@ type Config struct {
 func Routes(app *web.App, a *auth.Auth) {
 	const version = "v1"
 
-	authen := mid.Authorization(a)
+	authen := mid.AuthenticateLocal(a)
 	api := newAPI(a)
 	app.HandleFunc("GET /auth/token/{kid}", api.token, authen)
 	app.HandleFunc("GET /auth/authenticate", api.authenticate, authen)
-	app.HandleFunc("GET /auth/authorize", api.authorize, authen)
+	app.HandleFunc("POST /auth/authorize", api.authorize, authen)
 
 }

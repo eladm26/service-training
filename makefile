@@ -34,7 +34,7 @@ token:
 
 curl-auth:
 	curl -il \
-	-H "Authorization: Bearer ${TOKEN}" "http://localhost:6000/auth/authenticate"
+	-H "Authorization: Bearer ${TOKEN}" "http://localhost:3000/testauth"
 
 # ==============================================================================
 # Define dependencies
@@ -59,6 +59,11 @@ SALES_IMAGE     := $(BASE_IMAGE_NAME)/$(SALES_APP):$(VERSION)
 METRICS_IMAGE   := $(BASE_IMAGE_NAME)/metrics:$(VERSION)
 AUTH_IMAGE      := $(BASE_IMAGE_NAME)/$(AUTH_APP):$(VERSION)
 
+# ==============================================================================
+# Install dependencies
+
+dev-docker:
+	docker pull $(POSTGRES)
 
 
 # ==============================================================================
@@ -114,11 +119,17 @@ dev-status:
 
 # ------------------------------------------------------------------------------
 
+dev-load-db:
+	kind load docker-image $(POSTGRES) --name $(KIND_CLUSTER)
+
 dev-load:
 	kind load docker-image $(SALES_IMAGE) --name $(KIND_CLUSTER)
 	kind load docker-image $(AUTH_IMAGE) --name $(KIND_CLUSTER)
 
 dev-apply:
+	kustomize build zarf/k8s/dev/database | kubectl apply -f -
+	kubectl rollout status --namespace=$(NAMESPACE) --watch --timeout=120s sts/database
+
 	kustomize build zarf/k8s/dev/auth | kubectl apply -f -
 	kubectl wait pods --namespace=$(NAMESPACE) --selector app=$(AUTH_APP) --timeout=120s --for=condition=Ready
 
@@ -127,10 +138,8 @@ dev-apply:
 
 
 dev-restart:
-	kubectl rollout restart deployment $(SALES_APP) --namespace=$(NAMESPACE)
-
-dev-restart-auth:
 	kubectl rollout restart deployment $(AUTH_APP) --namespace=$(NAMESPACE)
+	kubectl rollout restart deployment $(SALES_APP) --namespace=$(NAMESPACE)
 
 dev-update: build dev-load dev-restart
 

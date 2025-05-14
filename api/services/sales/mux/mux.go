@@ -7,15 +7,15 @@ import (
 
 	"github.com/ardanlabs/service/api/services/api/mid"
 	"github.com/ardanlabs/service/api/services/sales/route/sys/checkapi"
-	"github.com/ardanlabs/service/business/api/auth"
+	"github.com/ardanlabs/service/app/api/authclient"
 	"github.com/ardanlabs/service/foundation/logger"
 	"github.com/ardanlabs/service/foundation/web"
 )
 
-func WebAPI(log *logger.Logger, auth *auth.Auth, shutdown chan os.Signal) *web.App {
+func WebAPI(log *logger.Logger, authClient *authclient.Client, shutdown chan os.Signal) *web.App {
 	mux := web.NewApp(shutdown, mid.Logger(log), mid.Errors(log), mid.Metrics(), mid.Panics())
 
-	checkapi.Routes(mux, auth)
+	checkapi.Routes(mux, log, authClient)
 
 	return mux
 }

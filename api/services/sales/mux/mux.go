@@ -10,12 +10,13 @@ import (
 	"github.com/ardanlabs/service/app/api/authclient"
 	"github.com/ardanlabs/service/foundation/logger"
 	"github.com/ardanlabs/service/foundation/web"
+	"github.com/jmoiron/sqlx"
 )
 
-func WebAPI(log *logger.Logger, authClient *authclient.Client, shutdown chan os.Signal) *web.App {
+func WebAPI(build string, log *logger.Logger, db *sqlx.DB, authClient *authclient.Client, shutdown chan os.Signal) *web.App {
 	mux := web.NewApp(shutdown, mid.Logger(log), mid.Errors(log), mid.Metrics(), mid.Panics())
 
-	checkapi.Routes(mux, log, authClient)
+	checkapi.Routes(build, mux, log, db, authClient)
 
 	return mux
 }

@@ -151,6 +151,8 @@ dev-logs:
 dev-logs-auth:
 	kubectl logs --namespace=$(NAMESPACE) -l app=$(AUTH_APP) --all-containers=true -f --tail=100 | go run api/cmd/tooling/logfmt/main.go
 
+dev-logs-init:
+	kubectl logs --namespace=$(NAMESPACE) -l app=$(SALES_APP) -f --tail=100 -c init-migrate-seed
 
 # ------------------------------------------------------------------------------
 
